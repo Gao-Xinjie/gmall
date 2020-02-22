@@ -3,6 +3,7 @@ package com.gaoxinjie.gmall.order.service.impl;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.gaoxinjie.gmall.bean.OrderDetail;
 import com.gaoxinjie.gmall.bean.OrderInfo;
+import com.gaoxinjie.gmall.bean.enums.ProcessStatus;
 import com.gaoxinjie.gmall.order.mapper.OrderDetailMapper;
 import com.gaoxinjie.gmall.order.mapper.OrderInfoMapper;
 import com.gaoxinjie.gmall.service.OrderService;
@@ -106,5 +107,17 @@ public class OrderServiceImpl implements OrderService {
         List<OrderDetail> orderDetailList = orderDetailMapper.select(orderDetail);
         orderInfo.setOrderDetailList(orderDetailList);
         return orderInfo;
+    }
+
+    @Override
+    public void updateOrderStatus(String orderId, ProcessStatus processStatus,OrderInfo... orderInfos) {
+        OrderInfo orderInfo = new OrderInfo();
+        if (orderInfos!=null&&orderInfos.length>0){
+            orderInfo=orderInfos[0];
+        }
+        orderInfo.setId(orderId);
+        orderInfo.setProcessStatus(processStatus);
+        orderInfo.setOrderStatus(processStatus.getOrderStatus());
+        orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
     }
 }
