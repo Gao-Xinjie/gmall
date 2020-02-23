@@ -1,6 +1,7 @@
 package com.gaoxinjie.gmall.order.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.fastjson.JSON;
 import com.gaoxinjie.gmall.bean.*;
 import com.gaoxinjie.gmall.bean.enums.OrderStatus;
 import com.gaoxinjie.gmall.bean.enums.ProcessStatus;
@@ -14,14 +15,13 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.thymeleaf.templateresolver.ITemplateResolutionValidity;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
@@ -119,5 +119,13 @@ public class OrderController {
     public String checkSkuNum(OrderDetail orderDetail){
         String hasStock = HttpClientUtil.doGet("http://www.gware.com/hasStock?skuId=" + orderDetail.getSkuId() + "&num=" + orderDetail.getSkuNum());
         return hasStock;
+    }
+
+    @PostMapping("orderSplit")
+    @ResponseBody
+    public String orderSplit(@RequestParam("orderId")String orderId,@RequestParam("wareSkuMap")String wareSkuMap){
+        List<Map> paramMapList = orderService.orderSplit(orderId, wareSkuMap);
+        String paramMapListJson = JSON.toJSONString(paramMapList);
+        return paramMapListJson;
     }
 }
